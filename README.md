@@ -13,7 +13,7 @@ curl -k -O https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/CFIPlus.
 curl -k -O https://mirror.ghproxy.com/https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/CFIPlus.sh && chmod +x CFIPlus.sh && ./CFIPlus.sh
 ```
 
-执行完成后会将CloudFlareCDN IP 保存至 IPlus.txt
+执行完成后会将CloudFlareCDN IP 保存至 [IPlus.txt](https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/IPlus.txt)（该文件是我第一次执行脚本产生的文件，如需最新IP文件请自行运行脚本）。
 
 ### 自定义端口验证执行
 HTTP：80，8080，8880，2052，2082，2086，2095；
