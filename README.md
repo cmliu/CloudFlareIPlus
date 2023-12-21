@@ -13,7 +13,7 @@ curl -k -O https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/CFIPlus.
 curl -k -O https://mirror.ghproxy.com/https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/CFIPlus.sh && chmod +x CFIPlus.sh && ./CFIPlus.sh
 ```
 
-执行完成后会将CloudFlareCDN IP 保存至 [IPlus.txt](https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/IPlus.txt)（该文件是我第一次执行脚本产生的文件，如需最新IP文件请自行运行脚本）。
+执行完成后会将CloudFlareCDN IP 保存至 [IPlus.txt](https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/IPlus.txt)（该文件是我第一次执行脚本产生的文件，如需最新IP文件请自行运行脚本），后还会将IP按[国家地区代码保存至ip文件夹](https://github.com/cmliu/cloudflare-better-ip)。
 
 ### 自定义端口验证执行
 HTTP：80，8080，8880，2052，2082，2086，2095；
@@ -31,6 +31,11 @@ HTTPS：443，2053，2083，2087，2096，8443。
  ├─ IPlus.txt       # CloudFlareCDN IP 脚本执行结果文件
  ├─ Piplist         # CIDR展开至IP 执行程序
  ├─ Pscan           # 端口扫描程序
+ ├─ ip              # 将IP按国家地区分类保存目录
+ │   ├─ HK-443.txt  # 香港地区IP
+ │   ├─ SG-443.txt  # 新加坡地区IP
+ │  ...
+ │   └─ US-443.txt  # 美国地区IP
  └─ temp            # 脚本执行临时文件暂存文件夹
      ├─ ip.txt      # 临时文件
     ...
