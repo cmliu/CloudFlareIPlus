@@ -3,17 +3,25 @@
 
 ## 用法
 
-一键执行脚本
+### 一键执行脚本
 ``` bash
 curl -k -O https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/CFIPlus.sh && chmod +x CFIPlus.sh && ./CFIPlus.sh
 ```
 
-代理加速执行
+### 代理加速执行
 ``` bash
 curl -k -O https://mirror.ghproxy.com/https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/CFIPlus.sh && chmod +x CFIPlus.sh && ./CFIPlus.sh
 ```
 
 执行完成后会将CloudFlareCDN IP 保存至 IPlus.txt
+
+### 自定义端口验证执行
+HTTP：80，8080，8880，2052，2082，2086，2095；
+
+HTTPS：443，2053，2083，2087，2096，8443。
+``` bash
+./CFIPlus.sh 2096
+```
 
 ## 文件结构
 ```
