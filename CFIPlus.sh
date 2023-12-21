@@ -40,7 +40,7 @@ apt_update() {
 
 apt_install() {
     if ! command -v "$1" &> /dev/null; then
-        log "$1 未安装，开始安装..."
+        echo "$1 未安装，开始安装..."
         apt_update
         
 	if grep -qi "alpine" /etc/os-release; then
@@ -52,15 +52,47 @@ apt_install() {
 	elif grep -qi "centos\|red hat\|fedora" /etc/os-release; then
 		sudo yum install $1 -y
 	else
-		log "未能检测出你的系统：$(uname)，请自行安装$1。"
+		echo "未能检测出你的系统：$(uname)，请自行安装$1。"
 		exit 1
 	fi
  
-        log "$1 安装完成!"
+        echo "$1 安装完成!"
     fi
 }
 
 apt_install curl  # 安装curl
+apt_install jq
+
+# 检测是否已经安装了geoiplookup
+if ! command -v geoiplookup &> /dev/null; then
+    echo "geoiplookup Not installed, start installation..."
+    apt_update
+    apt_install geoip-bin -y
+    echo "geoiplookup The installation is complete!"
+fi
+
+if ! command -v mmdblookup &> /dev/null; then
+    echo "mmdblookup Not installed, start installation..."
+    apt_update
+    apt_install mmdb-bin
+    echo "mmdblookup The installation is complete!"
+fi
+
+# 检测GeoLite2-Country.mmdb文件是否存在
+if [ ! -f "/usr/share/GeoIP/GeoLite2-Country.mmdb" ]; then
+    echo "The file /usr/share/GeoIP/GeoLite2-Country.mmdb does not exist. downloading..."
+    
+    # 使用curl命令下载文件
+    curl -L -o /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-Country.mmdb"
+    
+    # 检查下载是否成功
+    if [ $? -eq 0 ]; then
+        echo "Download completed."
+    else
+        echo "Download failed. The script terminates."
+        exit 1
+    fi
+fi
 
 # 如果当前目录下不存在Pscan，则自动下载
 if [ ! -f "./Pscan" ]; then
@@ -196,8 +228,29 @@ if [ ! -e "AS209242ip.txt" ]; then
   exit 1
 fi
 
-echo "正在验证 AS209242 CloudFlare CDN IP。"
+echo "正在验证 AS209242 CloudFlare CDN IP..."
 ./Pscan -F "AS209242ip.txt" -P $port -T 512 -O "temp/ip0.txt" -timeout 1s > /dev/null 2>&1
 awk 'NF' "temp/ip0.txt" | sed "s/:${port}$//" > "IPlus.txt"
 
-echo "最新CloudFlareIPlus 已保存至 IPlus.txt"
+echo "验证完成 AS209242 CloudFlareIPlus "
+
+echo "正在将IP按国家代码保存到ip文件夹内..."
+
+# 检查ip文件夹是否存在
+if [ -d "ip" ]; then
+    # 如果文件夹存在，删除符合要求的文件
+    rm -f "ip/*${port}.txt"
+else
+    # 如果文件夹不存在，创建文件夹
+    mkdir "ip"
+fi
+
+# 逐行处理IPlus.txt文件
+while read -r line; do
+    ip=$(echo $line | cut -d ' ' -f 1)  # 提取IP地址部分
+	result=$(mmdblookup --file /usr/share/GeoIP/GeoLite2-Country.mmdb --ip $ip country iso_code)
+	country_code=$(echo $result | awk -F '"' '{print $2}')
+	echo $ip >> "ip/${country_code}-${port}.txt"  # 写入对应的国家文件
+done < IPlus.txt
+	
+echo "最新CloudFlareIPlus 已保存至 IPlus.txt 并已将IP按国家分类保存到ip文件夹内..."
