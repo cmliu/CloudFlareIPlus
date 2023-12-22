@@ -252,5 +252,6 @@ while read -r line; do
 	country_code=$(echo $result | awk -F '"' '{print $2}')
 	echo $ip >> "ip/${country_code}-${port}.txt"  # 写入对应的国家文件
 done < IPlus.txt
-	
+
+cp -f IPlus.txt ip-${port}.txt
 echo "最新CloudFlareIPlus 已保存至 IPlus.txt 并已将IP按国家分类保存到ip文件夹内..."
