@@ -43,4 +43,4 @@ HTTPS：443，2053，2083，2087，2096，8443。
 ```
 
 ## 感谢
-[Moxin1044](https://github.com/Moxin1044)
+[Moxin1044](https://github.com/Moxin1044)、[P3TERX](https://github.com/P3TERX/GeoLite.mmdb)、[MaxMind](https://www.maxmind.com/)
