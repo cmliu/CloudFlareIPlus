@@ -196,7 +196,7 @@ if [ $current_attempt -gt $max_attempts ]; then
 fi
 
 upip() {
-sh CFIPlus.sh
+sh CFIPlus.sh $port
 }
 
 # 检查ip-${port}.txt文件是否存在
