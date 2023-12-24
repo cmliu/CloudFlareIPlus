@@ -7,7 +7,7 @@ zone_name="xxxx.com"     #你的主域名 *必填
 
 area_GEC="us"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
 port=443 #自定义测速端口 不能为空!!!
-ips=4    #获取更新IP的指定数量，默认为4 
+ips=2    #获取更新IP的指定数量，默认为4 
 
 speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长，过小会无法测出准确速度
 speedlower=10  #自定义下载速度下限,单位为mb/s
