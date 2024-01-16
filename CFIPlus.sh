@@ -2,9 +2,14 @@
 export LANG=zh_CN.UTF-8
 proxygithub="https://mirror.ghproxy.com/"
 port=443
+asn=209242
 ###############################################################以下脚本内容，勿动#######################################################################
 if [ -n "$1" ]; then 
     port="$1"
+fi
+
+if [ -n "$2" ]; then 
+    asn="$2"
 fi
 
 # 选择客户端 CPU 架构
@@ -106,8 +111,8 @@ if [ ! -f "./Piplist" ]; then
 	chmod +x Piplist
 fi
 
-file_path="AS209242.txt"
-url="https://asn2cidr.ssrc.cf/AS209242"
+file_path="AS${asn}.txt"
+url="https://asn2cidr.ssrc.cf/AS${asn}"
 
 upcidr2ip() {
 	curl -k -L "$url" -o "$file_path"
@@ -145,13 +150,13 @@ upcidr2ip() {
 		((count++))
 	  done < "$file_path"
 	  
-	merged_file="AS209242ip.txt"
-	# 检测AS209242ip.txt是否存在，存在则删除
+	merged_file="AS${asn}ip.txt"
+	# 检测AS${asn}ip.txt是否存在，存在则删除
 	if [ -e "$merged_file" ]; then
 	  rm -f "$merged_file"
 	fi
 	  
-	# 合并temp目录下所有的txt文件到AS209242ip.txt
+	# 合并temp目录下所有的txt文件到AS${asn}ip.txt
 	if [ -d "temp" ]; then
 	  cat "temp"/*.txt > "$merged_file"
 	  echo "已合并所有txt文件到 $merged_file。"
@@ -168,9 +173,9 @@ if [ -e "$file_path" ]; then
   if [ "$days_diff" -gt 30 ]; then
     # 文件存在且超过30天，重新下载
     upcidr2ip
-    echo "AS209242文件已存在但超过30天，已重新下载。"
+    echo "AS${asn}文件已存在但超过30天，已重新下载。"
   else
-    echo "AS209242文件存在且未超过30天，无需重新下载。"
+    echo "AS${asn}文件存在且未超过30天，无需重新下载。"
   fi
 else
   # 文件不存在，下载文件
@@ -196,7 +201,7 @@ for attempt in {1..3}; do
   #echo "文件大小: $file_size 字节"
 
   if [ "$file_size" -le 1024 ]; then
-    echo "AS209242 文件大小小于等于1K，开始更新 AS209242 文件。"
+    echo "AS${asn} 文件大小小于等于1K，开始更新 AS${asn} 文件。"
 
     # 执行 upcidr2ip 命令
     upcidr2ip
@@ -206,10 +211,10 @@ for attempt in {1..3}; do
 
     # 判断是否成功执行 upcidr2ip
     if [ "$file_size" -gt 1024 ]; then
-      echo "AS209242 更新成功，文件大小为: $file_size 字节。"
+      echo "AS${asn} 更新成功，文件大小为: $file_size 字节。"
       break
     else
-      echo "AS209242 更新失败，尝试重新执行（尝试次数: $attempt）。"
+      echo "AS${asn} 更新失败，尝试重新执行（尝试次数: $attempt）。"
     fi
   else
     break
@@ -218,21 +223,21 @@ done
 
   #echo "文件大小: $file_size 字节"
 if [ $file_size -le 1024 ]; then
-  echo "获取 AS209242 的 CIDR 失败。"
+  echo "获取 AS${asn} 的 CIDR 失败。"
   exit 1
 fi
 
-# 检测AS209242ip.txt是否存在
-if [ ! -e "AS209242ip.txt" ]; then
-  echo "错误: 文件 AS209242ip.txt 不存在，脚本停止运行。"
+# 检测AS${asn}ip.txt是否存在
+if [ ! -e "AS${asn}ip.txt" ]; then
+  echo "错误: 文件 AS${asn}ip.txt 不存在，脚本停止运行。"
   exit 1
 fi
 
-echo "正在验证 AS209242 CloudFlare CDN IP..."
-./Pscan -F "AS209242ip.txt" -P $port -T 512 -O "temp/ip0.txt" -timeout 1s > /dev/null 2>&1
+echo "正在验证 AS${asn} CloudFlare CDN IP..."
+./Pscan -F "AS${asn}ip.txt" -P $port -T 512 -O "temp/ip0.txt" -timeout 1s > /dev/null 2>&1
 awk 'NF' "temp/ip0.txt" | sed "s/:${port}$//" > "IPlus.txt"
 
-echo "验证完成 AS209242 CloudFlareIPlus "
+echo "验证完成 AS${asn} CloudFlareIPlus "
 
 echo "正在将IP按国家代码保存到ip文件夹内..."
 
