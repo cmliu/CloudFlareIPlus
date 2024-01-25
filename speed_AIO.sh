@@ -308,7 +308,7 @@ ips0=$ips
 TGtext0=""
 sed -n '2,20p' $result_csv | while read line
 do
-
+    speed=$(echo $line | cut -d',' -f6)
     # 初始化尝试次数
     attempt=0
     
@@ -334,7 +334,7 @@ do
 
 		# 判断 success 的值并输出相应的提示
 		if [ "${success}" == "true" ]; then
-		    TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}
+		    TGtext=$record_name'.'$zone_name' 更新成功: '${line%%,*}' 速度:'${speed}'MB/s'
 			echo $TGtext
 			break
 			echo "创建成功"
