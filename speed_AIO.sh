@@ -283,7 +283,7 @@ do
     TGtext0="$TGtext0%0A$TGtext"
     ips=$(($ips-1))    #二级域名序号递减
     if [ $ips -eq 0 ]; then
-        TGmessage "ACFST_DDNS更新完成！%0A地区:$record_name 	端口:$port $TGtext0"
+        TGmessage "CF官方优选域名维护完成！ $TGtext0"
         break
     fi
 
