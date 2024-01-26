@@ -5,9 +5,9 @@ auth_email="xxxx@gmail.com"    #你的CloudFlare注册账户邮箱 *必填
 auth_key="xxxxxxxxxxxxxxx"   #你的CloudFlare账户key,位置在域名概述页面点击右下角获取api key。*必填
 zone_name="xxxx.com"     #你的主域名 *必填
 
-area_GEC="us"    #自动更新的二级域名前缀,必须取hk sg kr jp us等常用国家代码
+area_GEC="yx"    #自动更新的二级域名前缀
 port=443 #自定义测速端口 不能为空!!!
-ips=2    #获取更新IP的指定数量，默认为4 
+ips=4    #获取更新IP的指定数量，默认为4 
 
 speedtestMB=90 #测速文件大小 单位MB，文件过大会拖延测试时长，过小会无法测出准确速度
 speedlower=10  #自定义下载速度下限,单位为mb/s
@@ -107,54 +107,6 @@ else
 fi
 }
 
-# 更新geoiplookup IP库
-download_GeoLite_mmdb() {
-	# 发送 API 请求获取仓库信息（替换 <username> 和 <repo>）
-	geoiplookup_latest_version=$(curl -s https://api.github.com/repos/P3TERX/GeoLite.mmdb/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
-	echo "最新版本号: $geoiplookup_latest_version"
-	# 下载文件到当前目录
-	curl -L -o /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://github.com/P3TERX/GeoLite.mmdb/releases/download/$geoiplookup_latest_version/GeoLite2-Country.mmdb"
-}
-
-# 检测是否已经安装了geoiplookup
-if ! command -v geoiplookup &> /dev/null; then
-    echo "geoiplookup 未安装，开始安装..."
-    apt_update
-    sudo apt install geoip-bin -y
-    echo "geoiplookup 安装完成！"
-	echo "GeoLite.mmdb 开始更新..."
-	download_GeoLite_mmdb
-	echo "GeoLite.mmdb 更新完成！"
-else
-    echo "geoiplookup 已安装."
-fi
-
-# 检测GeoLite2-Country.mmdb文件是否存在
-if [ ! -f "/usr/share/GeoIP/GeoLite2-Country.mmdb" ]; then
-    echo "文件 /usr/share/GeoIP/GeoLite2-Country.mmdb 不存在。正在下载..."
-    
-    # 使用curl命令下载文件
-    curl -L -o /usr/share/GeoIP/GeoLite2-Country.mmdb "${proxygithub}https://raw.githubusercontent.com/cmliu/AutoCloudflareSpeedTest/main/GeoLite2-Country.mmdb"
-    
-    # 检查下载是否成功
-    if [ $? -eq 0 ]; then
-        echo "下载完成。"
-    else
-        echo "下载失败。脚本终止。"
-        exit 1
-    fi
-fi
-
-# 检测是否已经安装了mmdb-bin
-if ! command -v mmdblookup &> /dev/null; then
-    echo "mmdblookup 未安装，开始安装..."
-    update_gengxin
-    sudo apt install mmdb-bin -y
-    echo "mmdblookup 安装完成！"
-else
-    echo "mmdblookup 已安装."
-fi
-
 download_CloudflareST() {
     # 发送 API 请求获取仓库信息（替换 <username> 和 <repo>）
     latest_version=$(curl -s https://api.github.com/repos/XIU2/CloudflareSpeedTest/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
@@ -196,40 +148,16 @@ if [ $current_attempt -gt $max_attempts ]; then
 fi
 
 upip() {
-sh CFIPlus.sh $port
+    curl -L -o IPlus.txt "${proxygithub}https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/IPlus.txt"
 }
 
 # 检查ip-${port}.txt文件是否存在
 if [ -e "IPlus.txt" ]; then
-    # 获取ip-${port}.txt文件的最后编辑时间戳
-    file_timestamp=$(stat -c %Y IPlus.txt)
-
-    # 获取当前时间戳
-    current_timestamp=$(date +%s)
-
-    # 计算时间差（以秒为单位）
-    time_diff=$((current_timestamp - file_timestamp))
-
-    # 将6小时转换为秒
-    eight_hours_in_seconds=$((168 * 3600))
-
-    # 如果时间差小于6小时
-    if [ "$time_diff" -lt "$eight_hours_in_seconds" ]; then
-        # 继续执行后续脚本逻辑
-        echo "IPlus.txt文件已是最新版本，无需更新"
-    else
-        echo "IPlus.txt文件已过期，开始更新整合IP库"
-	upip
-    fi
+    echo "IPlus.txt文件就绪"
 else
     echo "IPlus.txt文件不存在，开始更新整合IP库"
     upip
 fi
-
-if [ ! -d "log" ]; then
-  mkdir log
-fi
-
 
 #带有域名参数，将赋值第4参数为地区
 if [ -n "$4" ]; then 
@@ -252,8 +180,8 @@ else
 fi
 
 area_GEC0="${area_GEC^^}"
-ip_txt="ip/${area_GEC0}-${port}.txt"
-result_csv="log/${area_GEC0}-${port}.csv"
+ip_txt="IPlus.txt"
+result_csv="${area_GEC0}-${port}.csv"
 
 if [ ! -f "$ip_txt" ]; then
     echo "$area_GEC0 地区IP文件 $ip_txt 不存在。脚本终止。"
@@ -304,7 +232,6 @@ if [ "$record_count" -gt 0 ]; then
 fi
 
 #exit 1
-ips0=$ips
 TGtext0=""
 sed -n '2,20p' $result_csv | while read line
 do
