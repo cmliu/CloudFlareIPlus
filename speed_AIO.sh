@@ -147,15 +147,21 @@ if [ $current_attempt -gt $max_attempts ]; then
     exit 1
 fi
 
+area_GEC0="${area_GEC^^}"
+if [ "$area_GEC0" = "CMCC" ]; then
+    ip_txt="CMCC.txt"
+else
+    ip_txt="IPlus.txt"
+fi
+
 upip() {
-    curl -L -o IPlus.txt "${proxygithub}https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/IPlus.txt"
+    curl -L -o IPlus.txt "${proxygithub}https://raw.githubusercontent.com/cmliu/CloudFlareIPlus/main/${ip_txt}"
 }
 
-# 检查ip-${port}.txt文件是否存在
-if [ -e "IPlus.txt" ]; then
-    echo "IPlus.txt文件就绪"
+if [ -e "$ip_txt" ]; then
+    echo "$ip_txt文件就绪"
 else
-    echo "IPlus.txt文件不存在，开始更新整合IP库"
+    echo "$ip_txt文件不存在，开始更新整合IP库"
     upip
 fi
 
@@ -179,8 +185,7 @@ else
   record_name="${area_GEC}-${port}"
 fi
 
-area_GEC0="${area_GEC^^}"
-ip_txt="IPlus.txt"
+#ip_txt="IPlus.txt"
 result_csv="${area_GEC0}-${port}.csv"
 
 if [ ! -f "$ip_txt" ]; then
