@@ -23,15 +23,15 @@ export default {
 		// 获取 IP 列表
 		const ips = await fetchIPs();
 		
-		// 如果 IP 数量少于 7000，返回所有内容
-		if (ips.length < 7000) {
-				return new Response(ips.join('\n'), {
-						headers: { 'Content-Type': 'text/plain' },
-				});
+		// 如果 IP 数量少于 8000，返回所有内容
+		if (ips.length < 8000) {
+			return new Response(ips.join('\n'), {
+				headers: { 'Content-Type': 'text/plain' },
+			});
 		}
 
 		// 获取随机的 7000 行 IP
-		const randomIPs = await getRandomIPs(ips, 7000);
+		const randomIPs = await getRandomIPs(ips, 8000);
 
 		// 对随机获取的 IP 进行排序
 		const sortedIPs = randomIPs.sort();
@@ -41,7 +41,7 @@ export default {
 		
 		// 返回排序后的 IP
 		return new Response(responseText, {
-				headers: { 'Content-Type': 'text/plain' },
+			headers: { 'Content-Type': 'text/plain' },
 		});
 	},
 };
